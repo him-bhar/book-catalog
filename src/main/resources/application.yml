@@ -2,4 +2,18 @@ spring.application.name: book-catalog
 spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
+    contexts: main
+  h2:
+    console:
+      enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: standalone
+  liquibase:
     contexts: main,test
+
+---

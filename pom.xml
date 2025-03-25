@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<jooq.version>3.19.21</jooq.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,6 +55,16 @@
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen</artifactId>
+			<version>${jooq.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -76,6 +87,25 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<!-- Use org.jooq                for the Open Source Edition
+               org.jooq.pro            for commercial editions with Java 21 support,
+               org.jooq.pro-java-17    for commercial editions with Java 17 support,
+               org.jooq.pro-java-11    for commercial editions with Java 11 support,
+               org.jooq.pro-java-8     for commercial editions with Java 8 support,
+               org.jooq.trial          for the free trial edition with Java 21 support,
+               org.jooq.trial-java-17  for the free trial edition with Java 17 support,
+               org.jooq.trial-java-11  for the free trial edition with Java 11 support,
+               org.jooq.trial-java-8   for the free trial edition with Java 8 support
+
+       Note: Only the Open Source Edition is hosted on Maven Central.
+             Install the others locally using the provided scripts, or access them from here: https://repo.jooq.org
+             See the JDK version support matrix here: https://www.jooq.org/download/support-matrix-jdk -->
+
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta-extensions</artifactId>
+			<version>${jooq.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -132,6 +162,107 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooq.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<generator>
+						<database>
+							<name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
+							<properties>
+
+								<!-- Specify the location of your SQL script.
+                     You may use ant-style file matching, e.g. /path/**/to/*.sql
+
+                     Where:
+                     - ** matches any directory subtree
+                     - * matches any number of characters in a directory / file name
+                     - ? matches a single character in a directory / file name -->
+								<property>
+									<key>scripts</key>
+									<value>src/main/resources/database.sql</value>
+								</property>
+
+								<!-- The sort order of the scripts within a directory, where:
+
+                     - semantic: sorts versions, e.g. v-3.10.0 is after v-3.9.0 (default)
+                     - alphanumeric: sorts strings, e.g. v-3.10.0 is before v-3.9.0
+                     - flyway: sorts files the same way as flyway does
+                     - none: doesn't sort directory contents after fetching them from the directory -->
+								<property>
+									<key>sort</key>
+									<value>semantic</value>
+								</property>
+								<!-- The default schema for unqualified objects:
+
+                     - public: all unqualified objects are located in the PUBLIC (upper case) schema
+                     - none: all unqualified objects are located in the default schema (default)
+
+                     This configuration can be overridden with the schema mapping feature -->
+								<property>
+									<key>unqualifiedSchema</key>
+									<value>none</value>
+								</property>
+
+								<!-- The default name case for unquoted objects:
+
+                     - as_is: unquoted object names are kept unquoted
+                     - upper: unquoted object names are turned into upper case (most databases)
+                     - lower: unquoted object names are turned into lower case (e.g. PostgreSQL) -->
+								<property>
+									<key>defaultNameCase</key>
+									<value>as_is</value>
+								</property>
+							</properties>
+						</database>
+						<generate>
+<!--							<pojos>true</pojos>-->
+<!--							<daos>true</daos>-->
+							<records>true</records>
+<!--							<routines>true</routines>-->
+						</generate>
+						<target>
+							<packageName>com.bookcatalog.database</packageName>
+							<directory>target/generated-sources/jooq</directory>
+						</target>
+					</generator>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/jooq</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<spring.profiles.active>standalone</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 		</plugins>
