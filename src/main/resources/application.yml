@@ -13,6 +13,7 @@ spring:
     compose:
       enabled: true
       file: compose.yaml
+      lifecycle-management: start_and_stop
 
 ---
 
