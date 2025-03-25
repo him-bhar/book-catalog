@@ -1,1 +1,5 @@
 services:
+  db:
+    image: datagrip/h2
+    ports:
+      - "9092:9092"

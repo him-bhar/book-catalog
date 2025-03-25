@@ -15,5 +15,11 @@ spring:
       on-profile: standalone
   liquibase:
     contexts: main,test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:book-catalog
+    username: sa
+    password: password
+
 
 ---
