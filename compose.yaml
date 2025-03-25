@@ -1,5 +1,11 @@
 services:
   db:
-    image: datagrip/h2
+    image: postgres:latest
+#    labels:
+#      org.springframework.boot.ignore: true
+    environment:
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: dummy_password
+      POSTGRES_DB: book_catalog
     ports:
-      - "9092:9092"
+      - "5432:5432"

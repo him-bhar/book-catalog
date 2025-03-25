@@ -3,9 +3,16 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     contexts: main
-  h2:
-    console:
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  docker:
+    compose:
       enabled: true
+      file: compose.yaml
 
 ---
 
@@ -13,13 +20,18 @@ spring:
   config:
     activate:
       on-profile: standalone
+  docker:
+    compose:
+      enabled: false
   liquibase:
     contexts: main,test
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:book-catalog
+    url: jdbc:h2:mem:book-catalog;MODE=PostgreSQL
     username: sa
     password: password
-
+  h2:
+    console:
+      enabled: true
 
 ---
