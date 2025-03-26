@@ -18,6 +18,8 @@ spring:
 ---
 
 spring:
+  jooq:
+    sql-dialect: h2
   config:
     activate:
       on-profile: standalone
@@ -35,4 +37,6 @@ spring:
     console:
       enabled: true
 
+logging.level:
+  org.jooq: DEBUG
 ---
