@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = { BookCatalogApplication.class })
+//Comment next 2 lines to disable testcontainers and use h2 instead
 @Import(TestcontainersConfiguration.class)
 @TestPropertySource(properties = { "spring.jooq.sql-dialect=POSTGRES" })
 public class BookDaoTest {
