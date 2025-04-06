@@ -14,7 +14,8 @@ spring:
       enabled: true
       file: compose.yaml
       lifecycle-management: start_and_stop
-
+  jooq:
+    sql-dialect: postgres
 ---
 
 spring:
