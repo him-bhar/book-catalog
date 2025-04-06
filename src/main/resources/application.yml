@@ -19,11 +19,11 @@ spring:
 ---
 
 spring:
-  jooq:
-    sql-dialect: h2
   config:
     activate:
       on-profile: standalone
+  jooq:
+    sql-dialect: h2
   docker:
     compose:
       enabled: false
