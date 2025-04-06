@@ -17,6 +17,9 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 @SpringBootTest(classes = { BookCatalogApplication.class })
 //Comment next 2 lines to disable testcontainers and use h2 instead
 @Import(TestcontainersConfiguration.class)
@@ -28,9 +31,20 @@ public class BookDaoTest {
 
   @Test
   public void testCreate() {
-    Book book = Book.builder().title("test-title").description("a sample for test").build();
+    Book book = Book.builder().title("test-title").description("a sample for test")
+          .createDt(ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))).build();
     Long bookId = bookDao.createBook(book);
     Assertions.assertAll(() -> MatcherAssert.assertThat(bookId, Matchers.notNullValue(Long.class)));
+  }
+
+  @Test
+  public void testGetBookById() {
+    Book book = Book.builder().title("test-title").description("a sample for test")
+          .createDt(ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))).build();
+    Long bookId = bookDao.createBook(book);
+    Book bookFromDb = bookDao.getBookById(bookId.intValue());
+    Assertions.assertAll(() -> MatcherAssert.assertThat(bookFromDb, Matchers.notNullValue(Book.class)),
+          () -> MatcherAssert.assertThat(bookFromDb.getBookId(), Matchers.equalTo(bookId)));
   }
 
   @DynamicPropertySource
